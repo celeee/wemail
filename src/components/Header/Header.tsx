@@ -28,8 +28,13 @@ const Header = () => {
   };
 
   return (
-    <header style={{ background: "#323542" }}>
-      <Container maxW="container.lg">
+    <header
+      style={{
+        background: "#323542",
+        borderBottom: "2px solid #272A35",
+      }}
+    >
+      <Container maxW="container.xl">
         <Flex alignItems="center" h="4rem">
           <Heading as="h1" size="lg" fontWeight="bold" mr={8} color="white">
             WeMail
