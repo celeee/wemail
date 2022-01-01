@@ -1,5 +1,5 @@
-import { Box, Flex, Button } from "@chakra-ui/react";
-import NavigationList from "./NavigationList/NavigationList";
+import { Box, Flex, Button } from '@chakra-ui/react';
+import NavigationList from './NavigationList/NavigationList';
 
 const NavigationBar = (): JSX.Element => {
   return (
