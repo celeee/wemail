@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import Inbox from './Inbox';
+import { useEffect, useState } from "react";
+import { Outlet, useLocation } from "react-router-dom";
+import Inbox from "./Inbox";
 
 export interface IEmail {
   id: number;
@@ -9,7 +9,7 @@ export interface IEmail {
   body: string;
   timestamp: Date;
   viewedAt?: Date;
-  type: 'sent' | 'received' | 'draft';
+  type: "sent" | "received" | "draft";
 }
 
 const InboxContainer = () => {
@@ -17,36 +17,41 @@ const InboxContainer = () => {
   const [emails, setEmails] = useState<IEmail[] | null>([
     {
       id: 1,
-      subject: 'My subject',
+      subject: "My subject",
       isImportant: true,
-      body: 'This is my email, it is super long so that we are focued to cut it short',
+      body: "This is my email, it is super long so that we are focued to cut it short",
       timestamp: new Date(),
-      type: 'sent',
+      type: "sent",
     },
     {
       id: 2,
-      subject: 'My subject',
+      subject: "My subject",
       viewedAt: new Date(),
-      body: 'This is my email, it is super long so that we are focued to cut it short',
+      body: "This is my email, it is super long so that we are focued to cut it short",
       timestamp: new Date(),
-      type: 'received',
+      type: "received",
     },
     {
       id: 3,
-      subject: 'My subject',
+      subject: "My subject",
       viewedAt: new Date(),
-      body: 'This is my email, it is super long so that we are focued to cut it short',
+      body: "This is my email, it is super long so that we are focued to cut it short",
       timestamp: new Date(),
-      type: 'draft',
+      type: "draft",
     },
   ]);
 
   useEffect(() => {
     // fetch emails by pathname
-    console.log(pathname);
+    // console.log(pathname);
   });
 
-  return <Inbox emails={emails} />;
+  return (
+    <>
+      <Inbox emails={emails} />
+      <Outlet />
+    </>
+  );
 };
 
 export default InboxContainer;

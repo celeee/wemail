@@ -1,7 +1,7 @@
-import { List, ListItem } from '@chakra-ui/react';
-import InboxCard from './InboxCard';
+import { List, ListItem } from "@chakra-ui/react";
+import InboxCard from "./InboxCard";
 
-import { IEmail } from './InboxContainer';
+import { IEmail } from "./InboxContainer";
 
 interface IProps {
   emails: IEmail[] | null;
@@ -9,17 +9,17 @@ interface IProps {
 
 const Inbox = ({ emails }: IProps): JSX.Element => {
   return (
-    <List overflowY="auto" height="calc(100vh - 4rem)" overflowX={'hidden'}>
+    <List overflowY="auto" height="calc(100vh - 4rem)" overflowX="hidden">
       {emails?.map(email => (
         <ListItem
           key={email.id}
-          maxW={'445px'}
+          // maxW={'445px'}
           borderTop="2px solid #272A35"
-          _first={{ borderTop: '0' }}
-          cursor={'pointer'}
+          _first={{ borderTop: "0" }}
+          cursor={"pointer"}
           _hover={{
-            transformOrigin: 'left',
-            transform: 'scale(1.02)',
+            transformOrigin: "left",
+            transform: "scale(1.02)",
           }}
         >
           <InboxCard />
