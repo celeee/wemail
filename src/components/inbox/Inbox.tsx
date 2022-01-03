@@ -12,7 +12,7 @@ const Inbox = ({ emails }: IProps): JSX.Element => {
     <List overflowY="auto" height="calc(100vh - 4rem)" overflowX="hidden">
       {emails?.map(email => (
         <ListItem
-          key={email.id}
+          key={email.docId}
           // maxW={'445px'}
           borderTop="2px solid #272A35"
           _first={{ borderTop: "0" }}
@@ -22,7 +22,7 @@ const Inbox = ({ emails }: IProps): JSX.Element => {
             transform: "scale(1.02)",
           }}
         >
-          <InboxCard />
+          <InboxCard email={email} />
         </ListItem>
       ))}
     </List>

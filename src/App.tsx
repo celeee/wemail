@@ -15,13 +15,13 @@ import useQuery from "./hooks/useQuery";
 
 function App() {
   const { search } = useLocation();
-  const [id, setId] = useState<number | null>(null);
+  const [id, setId] = useState<string | null>(null);
   let query = useQuery();
 
   useEffect(() => {
     const searchId = query.get("id");
     if (searchId) {
-      setId(parseInt(searchId));
+      setId(searchId);
     } else {
       setId(null);
     }
@@ -38,6 +38,7 @@ function App() {
         templateColumns={`200px ${id ? "445px 1fr" : "1fr"}`}
         gap={2}
         background="#323542"
+        height="calc(100vh - 4rem)"
       >
         <GridItem>
           <NavigationBar />

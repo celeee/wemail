@@ -2,7 +2,13 @@ import { Box, Badge, Text, Stack, Avatar, Icon } from "@chakra-ui/react";
 import { FiStar } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
 
-const InboxCard = () => {
+import { IEmail } from "./InboxContainer";
+
+interface IProps {
+  email: IEmail;
+}
+
+const InboxCard = ({ email }: IProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
 
@@ -14,7 +20,7 @@ const InboxCard = () => {
       rounded={"md"}
       p={5}
       overflow={"hidden"}
-      onClick={() => navigate(`${pathname}?id=1`)}
+      onClick={() => navigate(`${pathname}?id=${email.docId}`)}
     >
       <Stack my={2} direction={"row"} spacing={4} align={"center"}>
         <Avatar
@@ -31,10 +37,10 @@ const InboxCard = () => {
               marginRight="auto"
             >
               <Text fontWeight={600} color={"gray.500"}>
-                Achim Rolle
+                {email.from}
               </Text>
               <Text color={"white"} fontWeight={600} fontSize={"lg"}>
-                Modern Website Layout Ideas
+                {email.subject}
               </Text>
             </Stack>
 
@@ -49,19 +55,21 @@ const InboxCard = () => {
                 py={0.5}
                 rounded={"xl"}
               >
-                9:30 AM
+                {new Date(email.timestamp).toLocaleString()}
               </Badge>
             </Stack>
           </Stack>
 
           <Stack direction={"row"}>
             <Text color={"gray.400"} pt={2} marginRight="auto">
-              {`Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-            nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam
-            erat, sed diam voluptua. At vero eos et accusam et justo duo dolores
-            et ea rebum.`.substring(0, 110) + "..."}
+              {email.message}
             </Text>
-            <Icon as={FiStar} fontSize="14" _hover={{ fill: "yellow" }} />
+            <Icon
+              as={FiStar}
+              fontSize="14"
+              _hover={{ fill: "yellow" }}
+              onClick={() => console.log("important")}
+            />
           </Stack>
         </Stack>
       </Stack>
