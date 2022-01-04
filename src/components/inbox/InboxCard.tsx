@@ -1,6 +1,7 @@
 import { Box, Badge, Text, Stack, Avatar, Icon } from "@chakra-ui/react";
 import { FiStar } from "react-icons/fi";
 import { useNavigate, useLocation } from "react-router-dom";
+import { formatTimestamp } from "../../utils/formatTimestamp";
 
 import { IEmail } from "./InboxContainer";
 
@@ -55,7 +56,7 @@ const InboxCard = ({ email }: IProps) => {
                 py={0.5}
                 rounded={"xl"}
               >
-                {new Date(email.timestamp).toLocaleString()}
+                {formatTimestamp(email.timestamp)}
               </Badge>
             </Stack>
           </Stack>
@@ -67,7 +68,9 @@ const InboxCard = ({ email }: IProps) => {
             <Icon
               as={FiStar}
               fontSize="14"
-              _hover={{ fill: "yellow" }}
+              fill={email?.isImportant ? "yellow" : "none"}
+              stroke={email?.isImportant ? "yellow" : "white"}
+              _hover={{ fill: "yellow", stroke: "yellow" }}
               onClick={() => console.log("important")}
             />
           </Stack>

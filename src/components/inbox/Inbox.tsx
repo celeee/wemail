@@ -13,13 +13,12 @@ const Inbox = ({ emails }: IProps): JSX.Element => {
       {emails?.map(email => (
         <ListItem
           key={email.docId}
-          // maxW={'445px'}
           borderTop="2px solid #272A35"
           _first={{ borderTop: "0" }}
           cursor={"pointer"}
           _hover={{
-            transformOrigin: "left",
-            transform: "scale(1.02)",
+            transformOrigin: "top",
+            transform: "scale(1.01)",
           }}
         >
           <InboxCard email={email} />

@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { IEmail } from "../components/inbox/InboxContainer";
+import { parse } from "../utils/firestore-parser";
 
 export const firebaseApi = createApi({
   reducerPath: "inbox",
@@ -23,11 +23,13 @@ export const firebaseApi = createApi({
               where: {
                 fieldFilter: {
                   field: {
-                    fieldPath: "type",
+                    fieldPath: type?.type ? "type" : "isImportant",
                   },
                   op: "EQUAL",
                   value: {
-                    stringValue: type?.type,
+                    [type.type ? "stringValue" : "booleanValue"]: type.type
+                      ? type.type
+                      : type.isImportant,
                   },
                 },
               },
@@ -35,8 +37,25 @@ export const firebaseApi = createApi({
           },
         };
       },
+      transformResponse: (response: any) => {
+        return response.map((item: any) => ({
+          docId: item.document.name.slice(-20),
+          ...parse(item.document),
+        }));
+      },
+    }),
+    updateEmail: builder.mutation({
+      query: ({ id, isImportant }) => ({
+        url: `https://firestore.googleapis.com/v1/projects/photo-gallery-48933/databases/(default)/documents/emails/${id}?updateMask.fieldPaths=isImportant`,
+        method: "PATCH",
+        body: {
+          fields: {
+            isImportant: { booleanValue: isImportant },
+          },
+        },
+      }),
     }),
   }),
 });
 
-export const { useGetEmailByTypeQuery } = firebaseApi;
+export const { useGetEmailByTypeQuery, useUpdateEmailMutation } = firebaseApi;

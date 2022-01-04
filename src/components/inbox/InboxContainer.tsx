@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useLocation } from "react-router-dom";
 import { useGetEmailByTypeQuery } from "../../services/firebase";
-import { parse } from "../../utils/firestore-parser";
-import { Progress } from "@chakra-ui/react";
-// import { useAppSelector } from "../../store/hooks";
-// import axios from "axios";
 
-// Component
+// Components
+import { Progress } from "@chakra-ui/react";
 import Inbox from "./Inbox";
 
 export interface IEmail {
@@ -15,7 +12,6 @@ export interface IEmail {
   userId: string;
   subject: string;
   isImportant: boolean;
-  isSpam: boolean;
   message: string;
   timestamp: Date;
   viewedAt?: Date;
@@ -26,7 +22,6 @@ export interface IEmail {
 enum EPathname {
   inbox = "inbox",
   important = "important",
-  spam = "spam",
   drafts = "drafts",
   "sent-mail" = "sent-mail",
 }
@@ -36,26 +31,18 @@ const InboxContainer: React.FC = () => {
   const pathname = location.pathname.slice(1) as EPathname;
 
   const emailsByPathName = {
-    inbox: { type: "received", isSpam: false },
-    important: { isImportnat: true },
-    spam: { isSpam: true },
+    inbox: { type: "received" },
+    important: { isImportant: true },
     drafts: { userId: "1", type: "drafts" },
     "sent-mail": { userId: "1", type: "sent" },
   };
 
-  const { data, error, isLoading, isFetching } = useGetEmailByTypeQuery(
-    emailsByPathName[pathname]
-  );
-
-  const [emails, setEmails] = useState<IEmail[] | null>(null);
-
-  useEffect(() => {
-    const modifiedData = data?.map((item: any) => ({
-      docId: item.document.name.slice(-20),
-      ...parse(item.document),
-    }));
-    setEmails(modifiedData);
-  }, [data]);
+  const {
+    data: emails,
+    error,
+    isLoading,
+    isFetching,
+  } = useGetEmailByTypeQuery(emailsByPathName[pathname]);
 
   if (error) return <p>Something went wrong</p>;
 

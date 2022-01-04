@@ -37,11 +37,16 @@ const Header = () => {
     >
       <Container maxW="container.xl">
         <Flex alignItems="center" h="4rem">
-          <Link to="/">
-            <Heading as="h1" size="lg" fontWeight="bold" mr={8} color="white">
-              WeMail
-            </Heading>
-          </Link>
+          <Heading
+            as={Link}
+            to="/"
+            size="lg"
+            fontWeight="bold"
+            mr={8}
+            color="white"
+          >
+            WeMail
+          </Heading>
 
           <form onSubmit={handleSubmit}>
             <FormControl display="flex">

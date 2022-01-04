@@ -50,7 +50,6 @@ function App() {
             <Route path={routes.IMPORTANT} element={<Inbox />} />
             <Route path={routes.SENT_MAIL} element={<Inbox />} />
             <Route path={routes.DRAFTS} element={<Inbox />} />
-            <Route path={routes.SPAM} element={<Inbox />} />
           </Routes>
         </GridItem>
         {id && (

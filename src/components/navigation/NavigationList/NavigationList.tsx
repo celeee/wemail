@@ -1,8 +1,8 @@
-import NavigationListItem from './NavigationListItem';
-import { FiMail, FiStar, FiAlertTriangle } from 'react-icons/fi';
-import { MdOutlineDrafts, MdForwardToInbox } from 'react-icons/md';
+import NavigationListItem from "./NavigationListItem";
+import { FiMail, FiStar } from "react-icons/fi";
+import { MdOutlineDrafts, MdForwardToInbox } from "react-icons/md";
 
-import * as routes from '../../../constants/routes';
+import * as routes from "../../../constants/routes";
 
 const NavigationList = (): JSX.Element => {
   return (
@@ -23,11 +23,6 @@ const NavigationList = (): JSX.Element => {
           label="Drafts"
           path={routes.DRAFTS}
           icon={MdOutlineDrafts}
-        />
-        <NavigationListItem
-          label="Spam"
-          path={routes.SPAM}
-          icon={FiAlertTriangle}
         />
       </ul>
     </nav>

@@ -13,8 +13,64 @@ import { TiArrowBackOutline } from "react-icons/ti";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiStar } from "react-icons/fi";
 import { BsThreeDots } from "react-icons/bs";
+import { useLocation } from "react-router-dom";
+import useQuery from "../../hooks/useQuery";
+import { IEmail } from "../inbox/InboxContainer";
+import {
+  useGetEmailByTypeQuery,
+  useUpdateEmailMutation,
+} from "../../services/firebase";
+import { formatTimestamp } from "../../utils/formatTimestamp";
+import { useEffect, useState } from "react";
+
+enum EPathname {
+  inbox = "inbox",
+  important = "important",
+  drafts = "drafts",
+  "sent-mail" = "sent-mail",
+}
 
 const EmailView = () => {
+  const location = useLocation();
+  const pathname = location.pathname.slice(1) as EPathname;
+
+  const emailsByPathName = {
+    inbox: { type: "received" },
+    important: { isImportant: true },
+    drafts: { userId: "1", type: "drafts" },
+    "sent-mail": { userId: "1", type: "sent" },
+  };
+
+  let query = useQuery();
+
+  const { email, refetch } = useGetEmailByTypeQuery(
+    emailsByPathName[pathname],
+    {
+      selectFromResult: ({ data }) => ({
+        email: data?.find(
+          (email: IEmail) => email.docId === query.get("id")
+        ) as IEmail,
+      }),
+    }
+  );
+  const [isEmailImportant, setEmailImpornant] = useState<boolean | null>(
+    email?.isImportant
+  );
+  const [updateEmail, result] = useUpdateEmailMutation();
+
+  useEffect(() => {
+    return () => {
+      console.log("******************* UNMOUNTED");
+    };
+  }, []);
+
+  const handleEmailImportant = () => {
+    setEmailImpornant(prev => {
+      updateEmail({ id: email.docId, isImportant: !prev });
+      return !prev;
+    });
+  };
+
   return (
     <GridItem>
       <ScaleFade initialScale={0.9} in={true}>
@@ -39,12 +95,13 @@ const EmailView = () => {
                 marginRight="auto"
               >
                 <Text fontWeight="bold" color={"gray.300"}>
-                  Achim Rolle{"  "}
+                  {email?.from}
+                  {"  "}
                   <Text as="span" fontWeight="normal" color={"gray.500"}>
                     to
                   </Text>{" "}
                   <Text as="span" fontWeight="bold" color={"gray.300"}>
-                    achim@example.com
+                    {email?.recipients}
                   </Text>
                 </Text>
               </Stack>
@@ -71,12 +128,16 @@ const EmailView = () => {
                 <Icon
                   as={FiStar}
                   color="gray.300"
+                  fill={isEmailImportant ? "yellow" : "none"}
+                  stroke={isEmailImportant ? "yellow" : "white"}
                   fontSize="2xl"
                   _hover={{
                     fill: "yellow",
+                    stroke: "yellow",
                     color: "yellow",
                     cursor: "pointer",
                   }}
+                  onClick={handleEmailImportant}
                 />
                 <Icon
                   as={BsThreeDots}
@@ -95,14 +156,17 @@ const EmailView = () => {
             justifyContent={"space-between"}
           >
             <Heading as="h1" size="lg" fontWeight="bold" mr={8} color="white">
-              Senior UI Desinger at Cleanzy
+              {email?.subject}
             </Heading>
-            <Text color="white">Today, 02th January 2022, 12:00 PM</Text>
+            {/* <Text color="white">Today, 02th January 2022, 12:00 PM</Text> */}
+            <Text color="white">
+              {email && formatTimestamp(email.timestamp)}
+            </Text>
           </Stack>
 
           <Stack direction={"row"} maxH={300} overflowY={"auto"}>
             <Text color={"gray.400"} pt={2} marginRight="auto">
-              Hello Martha Lynch <br /> <br />
+              {/* Hello Martha Lynch <br /> <br />
               Of all of the celestial bodies that capture our attention and
               fascination as astronomes, none has a greater influence on life on
               planet Earth than it's own satelite, the moon.When you think about
@@ -114,7 +178,8 @@ const EmailView = () => {
               about romance our poetry and literature and even how we feel about
               our day in day our lifes in many cases.It is not only primitive
               societies that ascribe mood swings, changes, in social conduct and
-              changes in weather to the moon.
+              changes in weather to the moon. */}
+              {email?.message}
             </Text>
           </Stack>
 
@@ -132,7 +197,7 @@ const EmailView = () => {
             />
           </Stack>
         </Box>
-      </ScaleFade>
+      </ScaleFade>{" "}
     </GridItem>
   );
 };
