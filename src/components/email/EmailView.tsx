@@ -19,7 +19,7 @@ import { IEmail } from "../inbox/InboxContainer";
 import {
   useGetEmailByTypeQuery,
   useUpdateEmailMutation,
-} from "../../services/firebase";
+} from "../../api/firebase";
 import { formatTimestamp } from "../../utils/formatTimestamp";
 import { useEffect, useState } from "react";
 

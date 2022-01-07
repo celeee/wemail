@@ -1,65 +1,79 @@
-import React, { useEffect, useState } from "react";
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
-import { ScaleFade } from "@chakra-ui/react";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import * as routes from "./constants/routes";
 
 // Components
-import { Box, Grid, GridItem } from "@chakra-ui/react";
-import Header from "./components/header/Header";
-import NavigationBar from "./components/navigation/NavigationBar";
-import Inbox from "./components/inbox/InboxContainer";
-import EmailView from "./components/email/EmailView";
+import { Box } from "@chakra-ui/react";
+import Login from "./components/auth/Login";
+import Signup from "./components/auth/Signup";
+import Layout from "./Layout";
+import NotFound from "./components/NotFound";
+import { useEffect, useState } from "react";
+import {
+  selectCurrentUser,
+  setCredentials,
+  setCurrentUser,
+  User,
+} from "./store/auth/authSlice";
+import { useAppDispatch, useAppSelector } from "./store/hooks";
+import jwt_decode from "jwt-decode";
+import { firebaseApi } from "./api/firebase";
 
-import useQuery from "./hooks/useQuery";
-
-function App() {
-  const { search } = useLocation();
-  const [id, setId] = useState<string | null>(null);
-  let query = useQuery();
+function App(): JSX.Element {
+  const dispatch = useAppDispatch();
+  const [loading, setLoading] = useState(true);
+  // const currentUser = useAppSelector(selectCurrentUser);
 
   useEffect(() => {
-    const searchId = query.get("id");
-    if (searchId) {
-      setId(searchId);
-    } else {
-      setId(null);
-    }
+    (async function () {
+      setLoading(true);
 
-    console.log("od url", searchId);
-    console.log("id", id);
-  }, [id, query, search]);
+      const user: {
+        token: string;
+        refreshToken: string;
+        expTime: number;
+      } = JSON.parse(localStorage.getItem("user") || "{}");
+
+      if (user.token && user.expTime && user.refreshToken) {
+        const expirationTime = user.expTime - 60000;
+        const decodedToken: any = jwt_decode(user.token);
+
+        if (Date.now() <= expirationTime) {
+          dispatch(setCredentials(user));
+          setLoading(false);
+        }
+
+        const currentUser = await dispatch(
+          firebaseApi.endpoints.getUserByUserId.initiate(decodedToken.user_id)
+        ).unwrap();
+
+        dispatch(setCurrentUser(currentUser));
+
+        setLoading(false);
+      }
+
+      setLoading(false);
+    })();
+  }, [dispatch]);
 
   return (
     <Box>
-      <Header />
-
-      <Grid
-        templateColumns={`200px ${id ? "445px 1fr" : "1fr"}`}
-        gap={2}
-        background="#323542"
-        height="calc(100vh - 4rem)"
-      >
-        <GridItem>
-          <NavigationBar />
-        </GridItem>
-        <GridItem background="#2D2F3C" transition={"all 10s"}>
-          <Routes>
-            <Route path="/" element={<Navigate replace to="/inbox" />} />
-            <Route path={routes.INBOX} element={<Inbox />} />
-            <Route path={routes.IMPORTANT} element={<Inbox />} />
-            <Route path={routes.SENT_MAIL} element={<Inbox />} />
-            <Route path={routes.DRAFTS} element={<Inbox />} />
-          </Routes>
-        </GridItem>
-        {id && (
-          <GridItem>
-            <ScaleFade initialScale={0.9} in={!!id}>
-              <EmailView />
-            </ScaleFade>
-          </GridItem>
-        )}
-      </Grid>
+      {!loading && (
+        <Routes>
+          <Route path="/" element={<Navigate replace to="/inbox" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          {[
+            routes.INBOX,
+            routes.IMPORTANT,
+            routes.SENT_MAIL,
+            routes.DRAFTS,
+          ].map((path, index) => {
+            return <Route path={path} element={<Layout />} key={index} />;
+          })}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      )}
     </Box>
   );
 }

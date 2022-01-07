@@ -1,10 +1,12 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import { useGetEmailByTypeQuery } from "../../services/firebase";
+import { useGetEmailByTypeQuery } from "../../api/firebase";
 
 // Components
 import { Progress } from "@chakra-ui/react";
 import Inbox from "./Inbox";
+import { useAppSelector } from "../../store/hooks";
+import { selectCurrentUser } from "../../store/auth/authSlice";
 
 export interface IEmail {
   docId: string;
@@ -29,12 +31,13 @@ enum EPathname {
 const InboxContainer: React.FC = () => {
   const location = useLocation();
   const pathname = location.pathname.slice(1) as EPathname;
+  const currentUser = useAppSelector(selectCurrentUser);
 
   const emailsByPathName = {
     inbox: { type: "received" },
     important: { isImportant: true },
-    drafts: { userId: "1", type: "drafts" },
-    "sent-mail": { userId: "1", type: "sent" },
+    drafts: { userId: currentUser?.userId, type: "drafts" },
+    "sent-mail": { userId: currentUser?.userId, type: "sent" },
   };
 
   const {

@@ -16,12 +16,19 @@ import {
   MenuDivider,
   Box,
   Container,
+  Center,
+  AvatarBadge,
 } from "@chakra-ui/react";
 import { SearchIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
+import { useAppSelector } from "../../store/hooks";
+import { selectCurrentUser } from "../../store/auth/authSlice";
+import { BsCamera } from "react-icons/bs";
 
 const Header = () => {
+  const currentUser = useAppSelector(selectCurrentUser);
   const [searchTerm, setSearchTerm] = useState<string>("");
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     console.log("submit");
@@ -76,10 +83,9 @@ const Header = () => {
                 >
                   <HStack>
                     <Avatar
+                      name={currentUser?.fullName}
                       size={"sm"}
-                      src={
-                        "https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9"
-                      }
+                      src={currentUser?.photoURL}
                     />
                     <VStack
                       display={{ base: "none", md: "flex" }}
@@ -88,7 +94,7 @@ const Header = () => {
                       ml="2"
                     >
                       <Text fontSize="sm" color="white">
-                        Justina Clark
+                        {currentUser?.fullName}
                       </Text>
                     </VStack>
                     <Box display={{ base: "none", md: "flex" }}>
@@ -97,9 +103,34 @@ const Header = () => {
                   </HStack>
                 </MenuButton>
                 <MenuList>
-                  <MenuItem>Profile</MenuItem>
-                  <MenuItem>Settings</MenuItem>
-                  <MenuItem>Billing</MenuItem>
+                  <Center py={4}>
+                    <Box maxW={"320px"} w={"full"} textAlign={"center"}>
+                      <Avatar
+                        name={currentUser?.fullName}
+                        size={"xl"}
+                        src={currentUser?.photoURL}
+                        alt={"Avatar Alt"}
+                        mb={4}
+                      >
+                        <AvatarBadge
+                          boxSize="1em"
+                          bg="white"
+                          border="8px"
+                          boxShadow={"dark-lg"}
+                          color="black"
+                        >
+                          <BsCamera />
+                        </AvatarBadge>
+                      </Avatar>
+                      <Heading fontSize={"2xl"} fontFamily={"body"}>
+                        {currentUser?.fullName}
+                      </Heading>
+                      <Text fontWeight={600} color={"gray.500"}>
+                        {currentUser?.email}
+                      </Text>
+                    </Box>
+                  </Center>
+
                   <MenuDivider />
                   <MenuItem>Sign out</MenuItem>
                 </MenuList>

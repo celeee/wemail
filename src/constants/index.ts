@@ -1,0 +1,1 @@
+export const ALLOWED_NUMBER_OF_REAUTH = 10;
