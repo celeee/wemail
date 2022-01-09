@@ -12,7 +12,7 @@ export type AuthState = {
   token: string | null;
   refreshToken: string | null;
   expTime: number | null;
-  currentUser: User | null;
+  currentUser: User;
 };
 
 const slice = createSlice({

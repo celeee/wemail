@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useGetEmailByTypeQuery } from "../../api/firebase";
 
@@ -7,6 +7,9 @@ import { Progress } from "@chakra-ui/react";
 import Inbox from "./Inbox";
 import { useAppSelector } from "../../store/hooks";
 import { selectCurrentUser } from "../../store/auth/authSlice";
+import { generateFirebaseQuery } from "./generateFirebaseQuery";
+import NoMessageFound from "../NoMessageFound";
+import { messageTypes } from "../../constants/index";
 
 export interface IEmail {
   docId: string;
@@ -28,30 +31,43 @@ enum EPathname {
   "sent-mail" = "sent-mail",
 }
 
-const InboxContainer: React.FC = () => {
+const InboxContainer = () => {
   const location = useLocation();
   const pathname = location.pathname.slice(1) as EPathname;
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const emailsByPathName = {
-    inbox: { type: "received" },
-    important: { isImportant: true },
-    drafts: { userId: currentUser?.userId, type: "drafts" },
-    "sent-mail": { userId: currentUser?.userId, type: "sent" },
-  };
+  const [query, setQuery] = useState<any[] | undefined>([]);
+
+  useEffect(() => {
+    if (currentUser) {
+      const generatedQuery = generateFirebaseQuery(pathname, currentUser);
+      setQuery(generatedQuery);
+    }
+  }, [currentUser, pathname]);
 
   const {
     data: emails,
     error,
     isLoading,
     isFetching,
-  } = useGetEmailByTypeQuery(emailsByPathName[pathname]);
+  } = useGetEmailByTypeQuery(query);
 
   if (error) return <p>Something went wrong</p>;
 
-  if (isLoading || isFetching) return <Progress size="xs" isIndeterminate />;
+  // if (isLoading) return <Progress size="xs" isIndeterminate />;
 
-  return <Inbox emails={emails} />;
+  // if (emails && emails.length === 0)
+  //   return <NoMessageFound {...messageTypes[pathname]} />;
+
+  return (
+    <>
+      {isFetching && <Progress size="xs" isIndeterminate />}
+      {emails && emails.length === 0 && !isFetching && !isLoading && (
+        <NoMessageFound {...messageTypes[pathname]} />
+      )}
+      <Inbox emails={emails} />
+    </>
+  );
 };
 
-export default InboxContainer;
+export default React.memo(InboxContainer);

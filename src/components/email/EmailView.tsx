@@ -22,6 +22,9 @@ import {
 } from "../../api/firebase";
 import { formatTimestamp } from "../../utils/formatTimestamp";
 import { useEffect, useState } from "react";
+import { generateFirebaseQuery } from "../inbox/generateFirebaseQuery";
+import { useAppSelector } from "../../store/hooks";
+import { selectCurrentUser } from "../../store/auth/authSlice";
 
 enum EPathname {
   inbox = "inbox",
@@ -33,18 +36,12 @@ enum EPathname {
 const EmailView = () => {
   const location = useLocation();
   const pathname = location.pathname.slice(1) as EPathname;
-
-  const emailsByPathName = {
-    inbox: { type: "received" },
-    important: { isImportant: true },
-    drafts: { userId: "1", type: "drafts" },
-    "sent-mail": { userId: "1", type: "sent" },
-  };
+  const currentUser = useAppSelector(selectCurrentUser);
 
   let query = useQuery();
 
-  const { email, refetch } = useGetEmailByTypeQuery(
-    emailsByPathName[pathname],
+  const { email } = useGetEmailByTypeQuery(
+    generateFirebaseQuery(pathname, currentUser),
     {
       selectFromResult: ({ data }) => ({
         email: data?.find(
@@ -53,20 +50,20 @@ const EmailView = () => {
       }),
     }
   );
-  const [isEmailImportant, setEmailImpornant] = useState<boolean | null>(
-    email?.isImportant
-  );
-  const [updateEmail, result] = useUpdateEmailMutation();
+  const [isEmailImportant, setEmailImpornant] = useState<boolean | null>(false);
+  const [updateEmail] = useUpdateEmailMutation();
 
   useEffect(() => {
+    setEmailImpornant(email?.isImportant);
     return () => {
       console.log("******************* UNMOUNTED");
+      setEmailImpornant(null);
     };
-  }, []);
+  }, [email?.isImportant]);
 
   const handleEmailImportant = () => {
     setEmailImpornant(prev => {
-      updateEmail({ id: email.docId, isImportant: !prev });
+      updateEmail({ docId: email.docId, isImportant: !prev });
       return !prev;
     });
   };
@@ -183,7 +180,7 @@ const EmailView = () => {
             </Text>
           </Stack>
 
-          <Stack
+          {/* <Stack
             direction="row"
             my={16}
             borderTop="1px dashed white"
@@ -195,9 +192,9 @@ const EmailView = () => {
               src="https://bit.ly/dan-abramov"
               alt="Dan Abramov"
             />
-          </Stack>
+          </Stack> */}
         </Box>
-      </ScaleFade>{" "}
+      </ScaleFade>
     </GridItem>
   );
 };

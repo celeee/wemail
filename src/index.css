@@ -39,3 +39,46 @@ code {
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.ql-stroke {
+  fill: none;
+  stroke: white !important;
+}
+
+.ql-toolbar .ql-fill {
+  fill: #fff;
+  stroke: none;
+}
+
+.ql-snow .ql-picker {
+  color: #fff !important;
+  fill: none;
+  stroke: white !important;
+}
+
+.ql-snow .ql-picker.ql-expanded {
+  color: #444 !important;
+  fill: none;
+  stroke: white !important;
+}
+
+.ql-toolbar.ql-show {
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #f4f5f7;
+  border-bottom: none;
+}
+
+.ql-container.ql-show {
+  border-radius: 0 0 4px 4px;
+  border: 1px solid #f4f5f7;
+  border-top: none;
+  color: #172b4d;
+  font-size: 15px;
+  font-weight: normal;
+}
+
+.ql-editor {
+  min-height: 150px;
+  max-height: 230px;
+  overflow-y: scroll;
+}
